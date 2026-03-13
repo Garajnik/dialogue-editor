@@ -39,6 +39,64 @@ The exported JSON can be used with the Unity scripts in the `unity-dialogue-play
 
 ---
 
+## Using in Unity
+
+The `unity-dialogue-player` folder contains C# scripts that read the exported JSON and display dialogue in Unity using the legacy Text component.
+
+### Quick setup
+
+1. **Add Newtonsoft.Json** — Unity’s built-in JSON parser cannot handle translations. In Package Manager → Add package by name → enter `com.unity.nuget.newtonsoft-json`.
+
+2. **Copy the scripts** — Copy `DialogueData.cs` and `DialoguePlayer.cs` into your project’s `Assets/` folder.
+
+3. **Place the JSON file** — Put your exported `dialogue.json` in `Assets/StreamingAssets/dialogue.json`.
+
+4. **Build the UI** — Create a Canvas with:
+   - A **Text** component for the NPC dialogue
+   - A **Button** for “Continue” (plain nodes)
+   - An empty **GameObject** as the parent for choice buttons
+   - An optional **Dropdown** for language selection
+
+5. **Create a ChoiceButton prefab** — A Button with a child Text. Save it as a prefab.
+
+6. **Wire up DialoguePlayer** — Add the DialoguePlayer component to a GameObject, then assign the Text, Continue Button, Choices Container, and Choice Button Prefab in the inspector.
+
+### Canvas hierarchy
+
+Create a Canvas with this structure:
+
+```
+Canvas
+└── DialoguePanel (Panel / Image)
+    ├── DialogueText          ← Text component (displays NPC dialogue)
+    ├── ContinueButton        ← Button (shown on plain nodes)
+    │   └── Text  "Continue"
+    ├── ChoicesContainer      ← Empty GameObject (parent for choice buttons)
+    └── LanguageDropdown      ← Dropdown (optional, for translations)
+```
+
+### Inspector fields
+
+| Field | Assign to |
+|-------|-----------|
+| Dialogue Text | `DialogueText` Text component |
+| Continue Button | `ContinueButton` Button |
+| Choices Container | `ChoicesContainer` Transform |
+| Choice Button Prefab | Your Button prefab with child Text |
+| Language Dropdown | `LanguageDropdown` Dropdown *(optional)* |
+| Json File Name | `dialogue.json` or your file name |
+
+### Behaviour
+
+- **Plain nodes** — NPC text and a Continue button; clicking advances to the next node.
+- **Choice nodes** — Buttons are spawned per option; each choice can lead to a different node.
+- **Entry node** — The script auto-detects the first node (no incoming `next` reference).
+- **Translations** — If you use the dropdown, text is looked up in `translations[language][id]` before falling back to the default.
+
+For the full JSON schema and further details, see `unity-dialogue-player/README.md`.
+
+---
+
 ## Tech Stack
 
 This project uses React + TypeScript + Vite.
